@@ -1,25 +1,35 @@
 // frontend/screens/group/GroupsScreen.js
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, TextInput } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { AuthContext } from '../../utils/AuthContext';
-import GroupItem from '../../components/group/GroupItem';
-import EmptyState from '../../components/common/EmptyState';
-import Loading from '../../components/common/Loading';
-import { COLORS } from '../../utils/constants';
-import { groupApi } from '../../services/api';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  Alert,
+  TextInput,
+} from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { AuthContext } from "../../utils/AuthContext";
+import GroupItem from "../../components/group/GroupItem";
+import EmptyState from "../../components/common/EmptyState";
+import Loading from "../../components/common/Loading";
+import { COLORS } from "../../utils/constants";
+import { groupApi, userApi } from "../../services/api";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const GroupsScreen = ({ navigation }) => {
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [membersList, setMembersList] = useState([]);
 
   const { user } = useContext(AuthContext);
 
-  const fetchGroups = async () => {
+  const fetchData = async () => {
     try {
       const response = await groupApi.getUserGroups(user.id);
       // Sắp xếp nhóm mới nhất lên đầu (dựa vào createdAt)
@@ -29,56 +39,117 @@ const GroupsScreen = ({ navigation }) => {
 
       setGroups(sortedGroups);
       setFilteredGroups(sortedGroups);
+
+      // Lấy danh sách thành viên từ tất cả các nhóm
+      await fetchAllMembers(sortedGroups);
     } catch (error) {
-      console.log('Error fetching groups:', error);
-      Alert.alert('Lỗi', 'Không thể tải danh sách nhóm. Vui lòng thử lại sau.');
+      console.log("Error fetching groups:", error);
+      Alert.alert("Lỗi", "Không thể tải danh sách nhóm. Vui lòng thử lại sau.");
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
   };
 
+  // Hàm lấy danh sách tất cả thành viên từ các nhóm
+  const fetchAllMembers = async (groups) => {
+    try {
+      // Tập hợp tất cả ID thành viên từ tất cả các nhóm
+      const memberIds = new Set();
+
+      // Lấy chi tiết của mỗi nhóm để thu thập ID thành viên
+      for (const group of groups) {
+        // Thêm người tạo nhóm vào danh sách thành viên
+        if (group.createdBy) {
+          memberIds.add(group.createdBy);
+        }
+
+        // Lấy danh sách thành viên từ chi tiết nhóm nếu chưa có
+        if (!group.members || group.members.length === 0) {
+          try {
+            const groupDetails = await groupApi.getGroup(group.id);
+            if (
+              groupDetails.data.members &&
+              Array.isArray(groupDetails.data.members)
+            ) {
+              groupDetails.data.members.forEach((memberId) =>
+                memberIds.add(memberId)
+              );
+            }
+          } catch (err) {
+            console.log(`Error fetching group ${group.id}:`, err);
+            // Tiếp tục với nhóm tiếp theo nếu xảy ra lỗi
+          }
+        } else {
+          // Nếu đã có danh sách thành viên trong nhóm, sử dụng nó
+          group.members.forEach((memberId) => memberIds.add(memberId));
+        }
+      }
+
+      // Chuyển đổi Set thành Array
+      const uniqueMemberIds = [...memberIds].filter((id) => id); // Lọc bỏ undefined/null
+
+      if (uniqueMemberIds.length === 0) return;
+
+      // Lấy thông tin chi tiết của mỗi thành viên
+      const memberPromises = uniqueMemberIds.map((id) => userApi.getUser(id));
+      const memberResponses = await Promise.all(memberPromises);
+
+      // Lọc các response hợp lệ và map thành danh sách thành viên
+      const validMembers = memberResponses
+        .filter((response) => response && response.data)
+        .map((response) => response.data);
+
+      setMembersList(validMembers);
+    } catch (error) {
+      console.log("Error fetching members:", error);
+      // Không hiển thị Alert vì đây không phải dữ liệu quan trọng
+    }
+  };
+
   // Load groups when screen is focused
   useFocusEffect(
     React.useCallback(() => {
-      fetchGroups();
+      fetchData();
     }, [user.id])
   );
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    fetchGroups();
+    fetchData();
   };
 
   const handleGroupPress = (group) => {
-    navigation.navigate('GroupDetail', {
+    navigation.navigate("GroupDetail", {
       groupId: group.id,
-      groupName: group.name
+      groupName: group.name,
     });
   };
 
   const handleJoinGroup = () => {
-    navigation.navigate('JoinGroup');
+    navigation.navigate("JoinGroup");
   };
 
   const handleSearch = (text) => {
     setSearchQuery(text);
 
-    if (text.trim() === '') {
+    if (text.trim() === "") {
       setFilteredGroups(groups);
       return;
     }
 
-    const filtered = groups.filter(group =>
-      group.name.toLowerCase().includes(text.toLowerCase()) ||
-      (group.description && group.description.toLowerCase().includes(text.toLowerCase()))
+    const filtered = groups.filter(
+      (group) =>
+        group.name.toLowerCase().includes(text.toLowerCase()) ||
+        (group.description &&
+          group.description.toLowerCase().includes(text.toLowerCase()))
     );
 
     setFilteredGroups(filtered);
   };
 
   const clearSearch = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setFilteredGroups(groups);
   };
 
@@ -91,7 +162,12 @@ const GroupsScreen = ({ navigation }) => {
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
-          <Icon name="search" size={20} color={COLORS.secondary} style={styles.searchIcon} />
+          <Icon
+            name="search"
+            size={20}
+            color={COLORS.secondary}
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Tìm kiếm nhóm..."
@@ -114,6 +190,7 @@ const GroupsScreen = ({ navigation }) => {
             group={item}
             onPress={() => handleGroupPress(item)}
             currentUserId={user.id}
+            membersList={membersList}
           />
         )}
         contentContainerStyle={styles.list}
@@ -132,7 +209,9 @@ const GroupsScreen = ({ navigation }) => {
             <Icon name="link-outline" size={20} color={COLORS.primary} />
             <View style={styles.joinGroupTextContainer}>
               <Text style={styles.joinGroupText}>Tham gia nhóm bằng mã</Text>
-              <Text style={styles.joinGroupSubtext}>Nhập mã tham gia để kết nối với nhóm</Text>
+              <Text style={styles.joinGroupSubtext}>
+                Nhập mã tham gia để kết nối với nhóm
+              </Text>
             </View>
             <Icon name="chevron-forward" size={20} color={COLORS.primary} />
           </TouchableOpacity>
@@ -150,7 +229,7 @@ const GroupsScreen = ({ navigation }) => {
               title="Chưa có nhóm nào"
               message="Bạn chưa tham gia nhóm nào. Hãy tạo nhóm mới hoặc tham gia vào nhóm đã có."
               buttonTitle="Tạo nhóm mới"
-              onButtonPress={() => navigation.navigate('AddGroup')}
+              onButtonPress={() => navigation.navigate("AddGroup")}
             />
           )
         }
@@ -164,7 +243,7 @@ const GroupsScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => navigation.navigate('AddGroup')}
+          onPress={() => navigation.navigate("AddGroup")}
         >
           <Icon name="add" size={24} color={COLORS.white} />
         </TouchableOpacity>
@@ -186,8 +265,8 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.lightGray,
     borderRadius: 8,
     paddingHorizontal: 12,
@@ -209,8 +288,8 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   joinGroupButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.white,
     borderRadius: 8,
     padding: 16,
@@ -227,7 +306,7 @@ const styles = StyleSheet.create({
   },
   joinGroupText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   joinGroupSubtext: {
@@ -236,7 +315,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   fabContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
   },
@@ -245,8 +324,8 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 5,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },

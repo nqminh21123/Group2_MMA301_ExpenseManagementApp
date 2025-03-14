@@ -1,15 +1,28 @@
 // frontend/components/group/GroupItem.js
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { COLORS } from '../../utils/constants';
-import Card from '../common/Card';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { COLORS } from "../../utils/constants";
+import Card from "../common/Card";
+import Icon from "react-native-vector-icons/Ionicons";
 
-const GroupItem = ({ group, onPress, currentUserId }) => {
-  const { id, name, description, members = [], expenses = [], createdBy } = group;
+const GroupItem = ({ group, onPress, currentUserId, membersList = [] }) => {
+  const {
+    id,
+    name,
+    description,
+    members = [],
+    expenses = [],
+    createdBy,
+  } = group;
 
   // Kiểm tra xem người dùng hiện tại có phải là người tạo nhóm không
   const isCreator = currentUserId === createdBy;
+
+  // Hàm lấy tên người dùng từ ID
+  const getMemberName = (memberId) => {
+    const member = membersList.find((m) => m.id === memberId);
+    return member ? member.name : `ID: ${memberId}`;
+  };
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -29,9 +42,15 @@ const GroupItem = ({ group, onPress, currentUserId }) => {
         </View>
 
         <View style={styles.creatorSection}>
-          <Icon name="person-circle-outline" size={16} color={COLORS.secondary} />
+          <Icon
+            name="person-circle-outline"
+            size={16}
+            color={COLORS.secondary}
+          />
           <Text style={styles.creatorText}>
-            {isCreator ? 'Bạn là người tạo nhóm' : 'Người tạo: ID ' + createdBy}
+            {isCreator
+              ? "Bạn là người tạo nhóm"
+              : `Người tạo: ${getMemberName(createdBy)}`}
           </Text>
         </View>
 
@@ -55,8 +74,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   iconContainer: {
@@ -64,8 +83,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: COLORS.lightGray,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   titleContainer: {
@@ -73,7 +92,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   description: {
@@ -82,8 +101,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   creatorSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 6,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: COLORS.border,
@@ -95,16 +114,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.secondary,
     marginLeft: 6,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   info: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "flex-start",
     paddingTop: 8,
   },
   infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 16,
   },
   infoText: {

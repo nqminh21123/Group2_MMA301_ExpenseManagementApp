@@ -1,56 +1,76 @@
 // frontend/components/expense/ExpenseItem.js
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../utils/constants';
-import Card from '../common/Card';
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { COLORS } from "../../utils/constants";
+import Card from "../common/Card";
 
-const ExpenseItem = ({ expense, onPress, showGroupName = false, groupName = '', userId = null }) => {
-  const { title, amount, date, category, settled, paidBy, participants = [] } = expense;
+const ExpenseItem = ({
+  expense,
+  onPress,
+  showGroupName = false,
+  groupName = "",
+  userId = null,
+  membersList = [],
+}) => {
+  const {
+    title,
+    amount,
+    date,
+    category,
+    settled,
+    paidBy,
+    participants = [],
+  } = expense;
 
   const formatDate = (dateString) => {
     try {
       const dateObj = new Date(dateString);
-      return format(dateObj, 'dd/MM/yyyy', { locale: vi });
+      return format(dateObj, "dd/MM/yyyy", { locale: vi });
     } catch (error) {
       return dateString;
     }
   };
+  const getMemberName = (memberId) => {
+    const member = membersList.find((m) => m.id === memberId);
+    return member ? member.name : `ID: ${memberId}`;
+  };
 
   const getIconForCategory = (category) => {
     switch (category) {
-      case 'Đồ ăn uống':
-        return 'fast-food-outline';
-      case 'Đi lại':
-        return 'car-outline';
-      case 'Mua sắm':
-        return 'cart-outline';
-      case 'Giải trí':
-        return 'film-outline';
-      case 'Gia dụng':
-        return 'home-outline';
-      case 'Thuê nhà':
-        return 'business-outline';
-      case 'Hóa đơn':
-        return 'document-text-outline';
+      case "Đồ ăn uống":
+        return "fast-food-outline";
+      case "Đi lại":
+        return "car-outline";
+      case "Mua sắm":
+        return "cart-outline";
+      case "Giải trí":
+        return "film-outline";
+      case "Gia dụng":
+        return "home-outline";
+      case "Thuê nhà":
+        return "business-outline";
+      case "Hóa đơn":
+        return "document-text-outline";
       default:
-        return 'cash-outline';
+        return "cash-outline";
     }
   };
 
   // Tính toán trạng thái thanh toán
   const getSettlementStatus = () => {
-    if (!participants || participants.length === 0) return { settled: 0, total: 0 };
+    if (!participants || participants.length === 0)
+      return { settled: 0, total: 0 };
 
     const total = participants.length;
-    const settledCount = participants.filter(p => p.settled).length;
+    const settledCount = participants.filter((p) => p.settled).length;
 
     return {
       settled: settledCount,
       total,
-      percent: Math.round((settledCount / total) * 100)
+      percent: Math.round((settledCount / total) * 100),
     };
   };
 
@@ -58,9 +78,14 @@ const ExpenseItem = ({ expense, onPress, showGroupName = false, groupName = '', 
   const isCurrentUserSettled = () => {
     if (!userId || !participants || participants.length === 0) return true;
 
-    const currentUserParticipant = participants.find(p => p.userId === userId);
+    const currentUserParticipant = participants.find(
+      (p) => p.userId === userId
+    );
     // Nếu là người trả tiền hoặc đã thanh toán
-    return paidBy === userId || (currentUserParticipant && currentUserParticipant.settled);
+    return (
+      paidBy === userId ||
+      (currentUserParticipant && currentUserParticipant.settled)
+    );
   };
 
   const { settled: settledCount, total, percent } = getSettlementStatus();
@@ -71,7 +96,11 @@ const ExpenseItem = ({ expense, onPress, showGroupName = false, groupName = '', 
       <Card style={styles.card}>
         <View style={styles.header}>
           <View style={styles.iconContainer}>
-            <Icon name={getIconForCategory(category)} size={24} color={COLORS.primary} />
+            <Icon
+              name={getIconForCategory(category)}
+              size={24}
+              color={COLORS.primary}
+            />
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>
@@ -89,18 +118,27 @@ const ExpenseItem = ({ expense, onPress, showGroupName = false, groupName = '', 
             <View
               style={[
                 styles.statusIndicator,
-                settled ? styles.settledIndicator :
-                  (settledCount > 0 ? styles.partialSettledIndicator : styles.unsettledIndicator)
+                settled
+                  ? styles.settledIndicator
+                  : settledCount > 0
+                  ? styles.partialSettledIndicator
+                  : styles.unsettledIndicator,
               ]}
             />
             <Text
               style={[
-                settled ? styles.settledText :
-                  (settledCount > 0 ? styles.partialSettledText : styles.unsettledText)
+                settled
+                  ? styles.settledText
+                  : settledCount > 0
+                  ? styles.partialSettledText
+                  : styles.unsettledText,
               ]}
             >
-              {settled ? 'Đã thanh toán' :
-                (settledCount > 0 ? `${settledCount}/${total} (${percent}%)` : 'Chưa thanh toán')}
+              {settled
+                ? "Đã thanh toán"
+                : settledCount > 0
+                ? `${settledCount}/${total} (${percent}%)`
+                : "Chưa thanh toán"}
             </Text>
           </View>
 
@@ -112,7 +150,9 @@ const ExpenseItem = ({ expense, onPress, showGroupName = false, groupName = '', 
             )}
 
             <Text style={styles.paidBy}>
-              {paidBy === userId ? 'Bạn trả' : 'Người trả: ID ' + paidBy}
+              {paidBy === userId
+                ? "Bạn trả"
+                : "Người trả:" + `${getMemberName(paidBy)}`}
             </Text>
           </View>
         </View>
@@ -126,8 +166,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   iconContainer: {
@@ -135,8 +175,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: COLORS.lightGray,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   titleContainer: {
@@ -144,7 +184,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   groupName: {
@@ -158,24 +198,24 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   amountContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   amount: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: COLORS.border,
   },
   statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   statusIndicator: {
     width: 8,
@@ -205,11 +245,11 @@ const styles = StyleSheet.create({
     color: COLORS.danger,
   },
   userStatusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   userStatusBadge: {
-    backgroundColor: COLORS.danger + '20',
+    backgroundColor: COLORS.danger + "20",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 10,
@@ -218,7 +258,7 @@ const styles = StyleSheet.create({
   userStatusText: {
     fontSize: 10,
     color: COLORS.danger,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   paidBy: {
     fontSize: 12,

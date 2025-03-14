@@ -1,16 +1,27 @@
 // frontend/screens/group/GroupDetailScreen.js
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl, Share, TextInput, Modal } from 'react-native';
-import { AuthContext } from '../../utils/AuthContext';
-import ExpenseItem from '../../components/expense/ExpenseItem';
-import Card from '../../components/common/Card';
-import EmptyState from '../../components/common/EmptyState';
-import Loading from '../../components/common/Loading';
-import Button from '../../components/common/Button';
-import { COLORS } from '../../utils/constants';
-import { groupApi, expenseApi, userApi } from '../../services/api';
-import Icon from 'react-native-vector-icons/Ionicons';
-import * as Clipboard from 'expo-clipboard';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  RefreshControl,
+  Share,
+  TextInput,
+  Modal,
+} from "react-native";
+import { AuthContext } from "../../utils/AuthContext";
+import ExpenseItem from "../../components/expense/ExpenseItem";
+import Card from "../../components/common/Card";
+import EmptyState from "../../components/common/EmptyState";
+import Loading from "../../components/common/Loading";
+import Button from "../../components/common/Button";
+import { COLORS } from "../../utils/constants";
+import { groupApi, expenseApi, userApi } from "../../services/api";
+import Icon from "react-native-vector-icons/Ionicons";
+import * as Clipboard from "expo-clipboard";
 
 const GroupDetailScreen = ({ route, navigation }) => {
   const { groupId } = route.params;
@@ -23,8 +34,8 @@ const GroupDetailScreen = ({ route, navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [isRegeneratingCode, setIsRegeneratingCode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'settled', 'unsettled'
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all"); // 'all', 'settled', 'unsettled', 'myUnsettled'
   const [showMembersModal, setShowMembersModal] = useState(false);
 
   const { user } = useContext(AuthContext);
@@ -44,26 +55,32 @@ const GroupDetailScreen = ({ route, navigation }) => {
       });
 
       setExpenses(sortedExpenses);
-      setFilteredExpenses(sortedExpenses);
+      // Apply default filters to expenses (moved from here to applyFilters function call)
 
       // Calculate total expenses
-      const total = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const total = sortedExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
       setTotalExpenses(total);
 
       // Fetch members details
       setMembers(groupResponse.data.members);
 
       // Lấy thông tin chi tiết của các thành viên
-      const memberDetailsPromises = groupResponse.data.members.map(memberId =>
+      const memberDetailsPromises = groupResponse.data.members.map((memberId) =>
         userApi.getUser(memberId)
       );
 
       const memberResponses = await Promise.all(memberDetailsPromises);
-      const memberDetails = memberResponses.map(response => response.data);
+      const memberDetails = memberResponses.map((response) => response.data);
       setMembersList(memberDetails);
+
+      // Apply initial filters
+      applyFilters(sortedExpenses, searchQuery, filterStatus);
     } catch (error) {
-      console.log('Error fetching group details:', error);
-      Alert.alert('Lỗi', 'Không thể tải thông tin nhóm. Vui lòng thử lại sau.');
+      console.log("Error fetching group details:", error);
+      Alert.alert("Lỗi", "Không thể tải thông tin nhóm. Vui lòng thử lại sau.");
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -80,11 +97,11 @@ const GroupDetailScreen = ({ route, navigation }) => {
   };
 
   const handleAddExpense = () => {
-    navigation.navigate('AddExpense', { groupId, groupName: group.name });
+    navigation.navigate("AddExpense", { groupId, groupName: group.name });
   };
 
   const handleExpensePress = (expense) => {
-    navigation.navigate('ExpenseDetail', { expenseId: expense.id });
+    navigation.navigate("ExpenseDetail", { expenseId: expense.id });
   };
 
   const handleViewMembers = () => {
@@ -94,38 +111,38 @@ const GroupDetailScreen = ({ route, navigation }) => {
   const handleAddMember = () => {
     // Hiển thị mã tham gia để chia sẻ với người khác
     Alert.alert(
-      'Mã tham gia nhóm',
+      "Mã tham gia nhóm",
       `Mã tham gia nhóm của bạn là: ${group.joinCode}\n\nBạn có thể chia sẻ mã này với bạn bè để họ tham gia vào nhóm.`,
       [
-        { text: 'Hủy', style: 'cancel' },
-        { text: 'Sao chép mã', onPress: () => copyJoinCode() },
-        { text: 'Chia sẻ', onPress: () => shareJoinCode() }
+        { text: "Hủy", style: "cancel" },
+        { text: "Sao chép mã", onPress: () => copyJoinCode() },
+        { text: "Chia sẻ", onPress: () => shareJoinCode() },
       ]
     );
   };
 
   const copyJoinCode = async () => {
     await Clipboard.setStringAsync(group.joinCode);
-    Alert.alert('Thành công', 'Đã sao chép mã tham gia vào clipboard');
+    Alert.alert("Thành công", "Đã sao chép mã tham gia vào clipboard");
   };
 
   const shareJoinCode = async () => {
     try {
       await Share.share({
-        message: `Tham gia nhóm "${group.name}" của tôi trong ứng dụng Quản Lý Chi Tiêu Nhóm. Mã tham gia: ${group.joinCode}`
+        message: `Tham gia nhóm "${group.name}" của tôi trong ứng dụng Quản Lý Chi Tiêu Nhóm. Mã tham gia: ${group.joinCode}`,
       });
     } catch (error) {
-      console.log('Error sharing join code:', error);
+      console.log("Error sharing join code:", error);
     }
   };
 
   const handleRegenerateCode = () => {
     Alert.alert(
-      'Tạo mã mới',
-      'Bạn có chắc chắn muốn tạo mã tham gia mới cho nhóm này không? Mã cũ sẽ không còn sử dụng được nữa.',
+      "Tạo mã mới",
+      "Bạn có chắc chắn muốn tạo mã tham gia mới cho nhóm này không? Mã cũ sẽ không còn sử dụng được nữa.",
       [
-        { text: 'Hủy', style: 'cancel' },
-        { text: 'Tạo mã mới', onPress: regenerateJoinCode }
+        { text: "Hủy", style: "cancel" },
+        { text: "Tạo mã mới", onPress: regenerateJoinCode },
       ]
     );
   };
@@ -136,19 +153,22 @@ const GroupDetailScreen = ({ route, navigation }) => {
       const response = await groupApi.regenerateJoinCode(groupId, user.id);
 
       // Cập nhật lại thông tin nhóm với mã mới
-      const updatedGroup = {...group, joinCode: response.data.joinCode};
+      const updatedGroup = { ...group, joinCode: response.data.joinCode };
       setGroup(updatedGroup);
 
-      Alert.alert('Thành công', `Mã tham gia mới của nhóm là: ${response.data.joinCode}`);
+      Alert.alert(
+        "Thành công",
+        `Mã tham gia mới của nhóm là: ${response.data.joinCode}`
+      );
     } catch (error) {
-      console.log('Error regenerating join code:', error);
-      let errorMessage = 'Đã xảy ra lỗi khi tạo mã mới';
+      console.log("Error regenerating join code:", error);
+      let errorMessage = "Đã xảy ra lỗi khi tạo mã mới";
 
       if (error.response && error.response.data.message) {
         errorMessage = error.response.data.message;
       }
 
-      Alert.alert('Lỗi', errorMessage);
+      Alert.alert("Lỗi", errorMessage);
     } finally {
       setIsRegeneratingCode(false);
     }
@@ -169,31 +189,54 @@ const GroupDetailScreen = ({ route, navigation }) => {
     let filtered = [...expenseList];
 
     // Apply search filter
-    if (query.trim() !== '') {
-      filtered = filtered.filter(expense =>
-        expense.title.toLowerCase().includes(query.toLowerCase()) ||
-        (expense.category && expense.category.toLowerCase().includes(query.toLowerCase())) ||
-        (expense.notes && expense.notes.toLowerCase().includes(query.toLowerCase()))
+    if (query.trim() !== "") {
+      filtered = filtered.filter(
+        (expense) =>
+          expense.title.toLowerCase().includes(query.toLowerCase()) ||
+          (expense.category &&
+            expense.category.toLowerCase().includes(query.toLowerCase())) ||
+          (expense.notes &&
+            expense.notes.toLowerCase().includes(query.toLowerCase()))
       );
     }
 
     // Apply status filter
-    if (status !== 'all') {
-      const isSettled = status === 'settled';
-      filtered = filtered.filter(expense => expense.settled === isSettled);
+    switch (status) {
+      case "settled":
+        // Chi tiêu đã thanh toán hoàn toàn
+        filtered = filtered.filter((expense) => expense.settled);
+        break;
+      case "unsettled":
+        // Chi tiêu chưa thanh toán hoàn toàn
+        filtered = filtered.filter((expense) => !expense.settled);
+        break;
+      case "myUnsettled":
+        // Chi tiêu mà người dùng hiện tại chưa thanh toán
+        filtered = filtered.filter((expense) => {
+          // Tìm người dùng hiện tại trong danh sách người tham gia
+          const currentUserParticipant = expense.participants.find(
+            (p) => p.userId === user.id
+          );
+          // Người dùng là người tham gia và chưa thanh toán
+          return currentUserParticipant && !currentUserParticipant.settled;
+        });
+        break;
+      default: // 'all'
+        // Không lọc thêm
+        break;
     }
 
     setFilteredExpenses(filtered);
   };
 
   const clearSearch = () => {
-    setSearchQuery('');
-    applyFilters(expenses, '', filterStatus);
+    setSearchQuery("");
+    applyFilters(expenses, "", filterStatus);
   };
 
   const clearFilters = () => {
-    setSearchQuery('');
-    setFilterStatus('all');
+    setSearchQuery("");
+    setFilterStatus("all");
     setFilteredExpenses(expenses);
   };
 
@@ -227,7 +270,9 @@ const GroupDetailScreen = ({ route, navigation }) => {
               renderItem={({ item, index }) => (
                 <View style={styles.memberItem}>
                   <View style={styles.memberAvatar}>
-                    <Text style={styles.memberAvatarText}>{item.name.charAt(0)}</Text>
+                    <Text style={styles.memberAvatarText}>
+                      {item.name.charAt(0)}
+                    </Text>
                   </View>
                   <View style={styles.memberInfo}>
                     <Text style={styles.memberName}>{item.name}</Text>
@@ -241,7 +286,9 @@ const GroupDetailScreen = ({ route, navigation }) => {
                 </View>
               )}
               ListEmptyComponent={
-                <Text style={styles.emptyMembersText}>Không có thành viên nào</Text>
+                <Text style={styles.emptyMembersText}>
+                  Không có thành viên nào
+                </Text>
               }
             />
           </View>
@@ -255,6 +302,8 @@ const GroupDetailScreen = ({ route, navigation }) => {
           <ExpenseItem
             expense={item}
             onPress={() => handleExpensePress(item)}
+            membersList={membersList}
+            userId={user.id}
           />
         )}
         contentContainerStyle={styles.list}
@@ -268,9 +317,18 @@ const GroupDetailScreen = ({ route, navigation }) => {
 
               {/* Hiển thị thông tin người tạo nhóm */}
               <View style={styles.creatorContainer}>
-                <Icon name="person-circle-outline" size={20} color={COLORS.secondary} />
+                <Icon
+                  name="person-circle-outline"
+                  size={20}
+                  color={COLORS.secondary}
+                />
                 <Text style={styles.creatorText}>
-                  {isCreator ? 'Bạn là người tạo nhóm này' : `Người tạo: ${membersList.find(m => m.id === group.createdBy)?.name || 'Không xác định'}`}
+                  {isCreator
+                    ? "Bạn là người tạo nhóm này"
+                    : `Người tạo: ${
+                        membersList.find((m) => m.id === group.createdBy)
+                          ?.name || "Không xác định"
+                      }`}
                 </Text>
               </View>
 
@@ -290,11 +348,25 @@ const GroupDetailScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.joinCodeBox}>
                     <Text style={styles.joinCode}>{group.joinCode}</Text>
-                    <TouchableOpacity onPress={copyJoinCode} style={styles.copyButton}>
-                      <Icon name="copy-outline" size={20} color={COLORS.primary} />
+                    <TouchableOpacity
+                      onPress={copyJoinCode}
+                      style={styles.copyButton}
+                    >
+                      <Icon
+                        name="copy-outline"
+                        size={20}
+                        color={COLORS.primary}
+                      />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={shareJoinCode} style={styles.shareButton}>
-                      <Icon name="share-social-outline" size={20} color={COLORS.primary} />
+                    <TouchableOpacity
+                      onPress={shareJoinCode}
+                      style={styles.shareButton}
+                    >
+                      <Icon
+                        name="share-social-outline"
+                        size={20}
+                        color={COLORS.primary}
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -315,7 +387,9 @@ const GroupDetailScreen = ({ route, navigation }) => {
                 </View>
 
                 <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{totalExpenses.toLocaleString()} đ</Text>
+                  <Text style={styles.statValue}>
+                    {totalExpenses.toLocaleString()} đ
+                  </Text>
                   <Text style={styles.statLabel}>Tổng chi</Text>
                 </View>
               </View>
@@ -344,7 +418,12 @@ const GroupDetailScreen = ({ route, navigation }) => {
             {/* Thanh tìm kiếm */}
             <View style={styles.searchContainer}>
               <View style={styles.searchInputContainer}>
-                <Icon name="search" size={20} color={COLORS.secondary} style={styles.searchIcon} />
+                <Icon
+                  name="search"
+                  size={20}
+                  color={COLORS.secondary}
+                  style={styles.searchIcon}
+                />
                 <TextInput
                   style={styles.searchInput}
                   placeholder="Tìm kiếm chi tiêu..."
@@ -352,8 +431,15 @@ const GroupDetailScreen = ({ route, navigation }) => {
                   onChangeText={handleSearch}
                 />
                 {searchQuery.length > 0 && (
-                  <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-                    <Icon name="close-circle" size={20} color={COLORS.secondary} />
+                  <TouchableOpacity
+                    onPress={clearSearch}
+                    style={styles.clearButton}
+                  >
+                    <Icon
+                      name="close-circle"
+                      size={20}
+                      color={COLORS.secondary}
+                    />
                   </TouchableOpacity>
                 )}
               </View>
@@ -364,55 +450,70 @@ const GroupDetailScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 style={[
                   styles.filterTab,
-                  filterStatus === 'all' && styles.activeFilterTab
+                  filterStatus === "all" && styles.activeFilterTab,
                 ]}
-                onPress={() => handleFilterChange('all')}
+                onPress={() => handleFilterChange("all")}
               >
                 <Text
                   style={[
                     styles.filterText,
-                    filterStatus === 'all' && styles.activeFilterText
+                    filterStatus === "all" && styles.activeFilterText,
                   ]}
                 >
                   Tất cả
                 </Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={[
                   styles.filterTab,
-                  filterStatus === 'unsettled' && styles.activeFilterTab
+                  filterStatus === "myUnsettled" && styles.activeFilterTab,
                 ]}
-                onPress={() => handleFilterChange('unsettled')}
+                onPress={() => handleFilterChange("myUnsettled")}
               >
                 <Text
                   style={[
                     styles.filterText,
-                    filterStatus === 'unsettled' && styles.activeFilterText
+                    filterStatus === "myUnsettled" && styles.activeFilterText,
                   ]}
                 >
-                  Chưa thanh toán
+                  Tôi chưa thanh toán
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.filterTab,
+                  filterStatus === "unsettled" && styles.activeFilterTab,
+                ]}
+                onPress={() => handleFilterChange("unsettled")}
+              >
+                <Text
+                  style={[
+                    styles.filterText,
+                    filterStatus === "unsettled" && styles.activeFilterText,
+                  ]}
+                >
+                  Chi tiêu nhóm chưa hoàn thiện
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[
                   styles.filterTab,
-                  filterStatus === 'settled' && styles.activeFilterTab
+                  filterStatus === "settled" && styles.activeFilterTab,
                 ]}
-                onPress={() => handleFilterChange('settled')}
+                onPress={() => handleFilterChange("settled")}
               >
                 <Text
                   style={[
                     styles.filterText,
-                    filterStatus === 'settled' && styles.activeFilterText
+                    filterStatus === "settled" && styles.activeFilterText,
                   ]}
                 >
-                  Đã thanh toán
+                  Chi tiêu nhóm đã thanh toán hết
                 </Text>
               </TouchableOpacity>
 
-              {(searchQuery !== '' || filterStatus !== 'all') && (
+              {(searchQuery !== "" || filterStatus !== "all") && (
                 <TouchableOpacity
                   style={styles.clearFiltersButton}
                   onPress={clearFilters}
@@ -448,10 +549,7 @@ const GroupDetailScreen = ({ route, navigation }) => {
           )
         }
       />
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={handleAddExpense}
-      >
+      <TouchableOpacity style={styles.fab} onPress={handleAddExpense}>
         <Icon name="add" size={24} color={COLORS.white} />
       </TouchableOpacity>
     </View>
@@ -472,7 +570,7 @@ const styles = StyleSheet.create({
   },
   groupName: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     marginBottom: 8,
   },
@@ -482,8 +580,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   creatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -493,7 +591,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.secondary,
     marginLeft: 8,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   joinCodeContainer: {
     marginBottom: 16,
@@ -503,19 +601,19 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   joinCodeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
   joinCodeLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   regenerateButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   regenerateText: {
     fontSize: 12,
@@ -523,19 +621,19 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   joinCodeBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.lightGray,
     borderRadius: 6,
     padding: 10,
   },
   joinCode: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     letterSpacing: 2,
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
   },
   copyButton: {
     padding: 8,
@@ -544,8 +642,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
     paddingVertical: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -554,11 +652,11 @@ const styles = StyleSheet.create({
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     marginBottom: 4,
   },
@@ -567,22 +665,22 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
   },
   actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   actionButton: {
     flex: 1,
     marginHorizontal: 4,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginVertical: 16,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
 
@@ -600,8 +698,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.lightGray,
     borderRadius: 8,
     paddingHorizontal: 12,
@@ -619,8 +717,9 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   filterContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
     backgroundColor: COLORS.white,
     borderRadius: 8,
     padding: 8,
@@ -636,10 +735,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 14,
     marginRight: 6,
+    marginBottom: 6,
     backgroundColor: COLORS.lightGray,
   },
   activeFilterTab: {
-    backgroundColor: COLORS.primary + '20', // Add transparency
+    backgroundColor: COLORS.primary + "20", // Add transparency
   },
   filterText: {
     fontSize: 12,
@@ -647,22 +747,22 @@ const styles = StyleSheet.create({
   },
   activeFilterText: {
     color: COLORS.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   clearFiltersButton: {
     padding: 6,
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
     width: 56,
     height: 56,
     borderRadius: 28,
     backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 5,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
@@ -673,13 +773,13 @@ const styles = StyleSheet.create({
   // Styles cho modal thành viên
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
-    width: '90%',
-    maxHeight: '80%',
+    width: "90%",
+    maxHeight: "80%",
     backgroundColor: COLORS.white,
     borderRadius: 12,
     padding: 16,
@@ -690,9 +790,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
@@ -700,12 +800,12 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
   },
   memberItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: COLORS.border,
@@ -715,13 +815,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   memberAvatarText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.white,
   },
   memberInfo: {
@@ -729,7 +829,7 @@ const styles = StyleSheet.create({
   },
   memberName: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.dark,
   },
   memberEmail: {
@@ -740,18 +840,18 @@ const styles = StyleSheet.create({
   creatorBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: COLORS.primary + '20',
+    backgroundColor: COLORS.primary + "20",
     borderRadius: 12,
   },
   creatorBadgeText: {
     fontSize: 12,
     color: COLORS.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptyMembersText: {
     fontSize: 14,
     color: COLORS.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
   },
 });

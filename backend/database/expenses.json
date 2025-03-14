@@ -215,13 +215,13 @@
       {
         "userId": "uq6t2s9e1",
         "share": 50,
-        "settled": true
+        "settled": false
       }
     ],
-    "settled": true,
+    "settled": false,
     "category": "Khác",
     "notes": "In tài liệu và báo cáo cho dự án",
-    "updatedAt": "2025-03-12T17:35:45.240Z"
+    "updatedAt": "2025-03-14T21:46:51.404Z"
   },
   {
     "id": "m86kc1x4J9E74",
@@ -253,32 +253,6 @@
     "category": "Đi lại",
     "notes": "",
     "updatedAt": "2025-03-12T23:42:36.389Z"
-  },
-  {
-    "id": "m86kgkg5EAVW1",
-    "title": "Ăn uống",
-    "amount": 10000000,
-    "paidBy": "up3w9b7r4",
-    "groupId": "m86h5sa4QH6TY",
-    "date": "2025-03-12",
-    "createdAt": "2025-03-12T23:43:51.173Z",
-    "splitType": "equal",
-    "participants": [
-      {
-        "userId": "up3w9b7r4",
-        "share": 50,
-        "settled": true
-      },
-      {
-        "userId": "ukx94m2p1",
-        "share": 50,
-        "settled": false
-      }
-    ],
-    "settled": false,
-    "category": "Đồ ăn uống",
-    "notes": "",
-    "updatedAt": "2025-03-12T23:51:39.098Z"
   },
   {
     "id": "m86w24roFUDTO",
@@ -314,6 +288,31 @@
     "settled": false,
     "category": "Giải trí",
     "notes": "",
-    "updatedAt": "2025-03-13T09:20:34.643Z"
+    "updatedAt": "2025-03-14T22:25:22.325Z"
+  },
+  {
+    "id": "m89a6ub83171Y",
+    "title": "Đf",
+    "amount": 55855,
+    "paidBy": "ukx94m2p1",
+    "groupId": "m86h5sa4QH6TY",
+    "date": "2025-03-14",
+    "createdAt": "2025-03-14T21:19:39.764Z",
+    "splitType": "custom",
+    "participants": [
+      {
+        "userId": "up3w9b7r4",
+        "share": 48.34,
+        "settled": false
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 51.66,
+        "settled": true
+      }
+    ],
+    "settled": false,
+    "category": "Mua sắm",
+    "notes": ""
   }
 ]

@@ -1,15 +1,23 @@
 // frontend/screens/expense/ExpenseDetailScreen.js
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Switch } from 'react-native';
-import { AuthContext } from '../../utils/AuthContext';
-import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
-import Loading from '../../components/common/Loading';
-import { COLORS } from '../../utils/constants';
-import { expenseApi, userApi } from '../../services/api';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+  Switch,
+} from "react-native";
+import { AuthContext } from "../../utils/AuthContext";
+import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
+import Loading from "../../components/common/Loading";
+import { COLORS } from "../../utils/constants";
+import { expenseApi, userApi } from "../../services/api";
+import Icon from "react-native-vector-icons/Ionicons";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 
 const ExpenseDetailScreen = ({ route, navigation }) => {
   const { expenseId } = route.params;
@@ -32,8 +40,11 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
       // Lấy thông tin chi tiết về mỗi người tham gia
       await fetchParticipantsDetails(response.data.participants);
     } catch (error) {
-      console.log('Error fetching expense details:', error);
-      Alert.alert('Lỗi', 'Không thể tải thông tin chi tiêu. Vui lòng thử lại sau.');
+      console.log("Error fetching expense details:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể tải thông tin chi tiêu. Vui lòng thử lại sau."
+      );
       navigation.goBack();
     } finally {
       setIsLoading(false);
@@ -43,27 +54,29 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
   const fetchParticipantsDetails = async (participants) => {
     try {
       // Lấy danh sách ID duy nhất của người tham gia
-      const userIds = [...new Set(participants.map(p => p.userId))];
+      const userIds = [...new Set(participants.map((p) => p.userId))];
 
       // Lấy thông tin của từng người dùng
-      const userDetailsPromises = userIds.map(userId => userApi.getUser(userId));
+      const userDetailsPromises = userIds.map((userId) =>
+        userApi.getUser(userId)
+      );
       const userResponses = await Promise.all(userDetailsPromises);
-      const userDetails = userResponses.map(response => response.data);
+      const userDetails = userResponses.map((response) => response.data);
 
       // Kết hợp thông tin người dùng và thông tin tham gia
-      const participantsWithDetails = participants.map(participant => {
-        const userDetail = userDetails.find(u => u.id === participant.userId);
+      const participantsWithDetails = participants.map((participant) => {
+        const userDetail = userDetails.find((u) => u.id === participant.userId);
         return {
           ...participant,
-          name: userDetail ? userDetail.name : 'Người dùng không xác định',
-          email: userDetail ? userDetail.email : '',
-          isCurrentUser: participant.userId === user.id
+          name: userDetail ? userDetail.name : "Người dùng không xác định",
+          email: userDetail ? userDetail.email : "",
+          isCurrentUser: participant.userId === user.id,
         };
       });
 
       setParticipantsDetails(participantsWithDetails);
     } catch (error) {
-      console.log('Error fetching participants details:', error);
+      console.log("Error fetching participants details:", error);
     }
   };
 
@@ -71,33 +84,39 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
     // Đảm bảo người dùng không thể đánh dấu chưa thanh toán cho người trả tiền
     if (participantId === expense.paidBy && currentSettled) {
       Alert.alert(
-        'Không thể thực hiện',
-        'Người trả tiền luôn được đánh dấu là đã thanh toán.'
+        "Không thể thực hiện",
+        "Người trả tiền luôn được đánh dấu là đã thanh toán."
       );
       return;
     }
 
     setIsUpdating(true);
     try {
-      await expenseApi.settleParticipant(expenseId, participantId, !currentSettled);
+      await expenseApi.settleParticipant(
+        expenseId,
+        participantId,
+        !currentSettled
+      );
 
       // Cập nhật UI mà không cần tải lại toàn bộ
       const updatedExpense = { ...expense };
       const participantIndex = updatedExpense.participants.findIndex(
-        p => p.userId === participantId
+        (p) => p.userId === participantId
       );
 
       if (participantIndex !== -1) {
         updatedExpense.participants[participantIndex].settled = !currentSettled;
 
         // Cập nhật trạng thái tổng thể
-        updatedExpense.settled = updatedExpense.participants.every(p => p.settled);
+        updatedExpense.settled = updatedExpense.participants.every(
+          (p) => p.settled
+        );
         setExpense(updatedExpense);
 
         // Cập nhật chi tiết người tham gia hiển thị
         const updatedParticipants = [...participantsDetails];
         const detailIndex = updatedParticipants.findIndex(
-          p => p.userId === participantId
+          (p) => p.userId === participantId
         );
 
         if (detailIndex !== -1) {
@@ -106,8 +125,11 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
         }
       }
     } catch (error) {
-      console.log('Error updating settlement status:', error);
-      Alert.alert('Lỗi', 'Không thể cập nhật trạng thái thanh toán. Vui lòng thử lại sau.');
+      console.log("Error updating settlement status:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể cập nhật trạng thái thanh toán. Vui lòng thử lại sau."
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -115,26 +137,26 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
 
   const handleSettleAll = async () => {
     const unsettledParticipants = expense.participants.filter(
-      p => !p.settled && p.userId !== expense.paidBy
+      (p) => !p.settled && p.userId !== expense.paidBy
     );
 
     if (unsettledParticipants.length === 0) {
-      Alert.alert('Thông báo', 'Tất cả mọi người đã thanh toán.');
+      Alert.alert("Thông báo", "Tất cả mọi người đã thanh toán.");
       return;
     }
 
     setIsUpdating(true);
     try {
       // Tạo mảng promises để cập nhật đồng thời
-      const updatePromises = unsettledParticipants.map(
-        p => expenseApi.settleParticipant(expenseId, p.userId, true)
+      const updatePromises = unsettledParticipants.map((p) =>
+        expenseApi.settleParticipant(expenseId, p.userId, true)
       );
 
       await Promise.all(updatePromises);
 
       // Cập nhật UI
       const updatedExpense = { ...expense };
-      updatedExpense.participants.forEach(p => {
+      updatedExpense.participants.forEach((p) => {
         p.settled = true;
       });
       updatedExpense.settled = true;
@@ -142,15 +164,21 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
 
       // Cập nhật chi tiết người tham gia hiển thị
       const updatedParticipants = [...participantsDetails];
-      updatedParticipants.forEach(p => {
+      updatedParticipants.forEach((p) => {
         p.settled = true;
       });
       setParticipantsDetails(updatedParticipants);
 
-      Alert.alert('Thành công', 'Tất cả thành viên đã được đánh dấu là đã thanh toán!');
+      Alert.alert(
+        "Thành công",
+        "Tất cả thành viên đã được đánh dấu là đã thanh toán!"
+      );
     } catch (error) {
-      console.log('Error settling all participants:', error);
-      Alert.alert('Lỗi', 'Không thể cập nhật trạng thái thanh toán. Vui lòng thử lại sau.');
+      console.log("Error settling all participants:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể cập nhật trạng thái thanh toán. Vui lòng thử lại sau."
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -158,24 +186,27 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
 
   const handleDelete = () => {
     Alert.alert(
-      'Xác nhận xóa',
-      'Bạn có chắc chắn muốn xóa chi tiêu này không?',
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa chi tiêu này không?",
       [
-        { text: 'Hủy', style: 'cancel' },
+        { text: "Hủy", style: "cancel" },
         {
-          text: 'Xóa',
-          style: 'destructive',
+          text: "Xóa",
+          style: "destructive",
           onPress: async () => {
             try {
               await expenseApi.deleteExpense(expenseId);
-              Alert.alert('Thành công', 'Chi tiêu đã được xóa!');
+              Alert.alert("Thành công", "Chi tiêu đã được xóa!");
               navigation.goBack();
             } catch (error) {
-              console.log('Error deleting expense:', error);
-              Alert.alert('Lỗi', 'Không thể xóa chi tiêu. Vui lòng thử lại sau.');
+              console.log("Error deleting expense:", error);
+              Alert.alert(
+                "Lỗi",
+                "Không thể xóa chi tiêu. Vui lòng thử lại sau."
+              );
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -183,7 +214,7 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
   const formatDate = (dateString) => {
     try {
       const dateObj = new Date(dateString);
-      return format(dateObj, 'dd/MM/yyyy', { locale: vi });
+      return format(dateObj, "dd/MM/yyyy", { locale: vi });
     } catch (error) {
       return dateString;
     }
@@ -193,7 +224,7 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
     if (!expense || !expense.participants) return { settled: 0, total: 0 };
 
     const total = expense.participants.length;
-    const settled = expense.participants.filter(p => p.settled).length;
+    const settled = expense.participants.filter((p) => p.settled).length;
 
     return { settled, total };
   };
@@ -210,12 +241,16 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
       <Card style={styles.expenseCard}>
         <View style={styles.header}>
           <Text style={styles.expenseTitle}>{expense.title}</Text>
-          <View style={[
-            styles.statusBadge,
-            expense.settled ? styles.settledBadge : styles.unsettledBadge
-          ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              expense.settled ? styles.settledBadge : styles.unsettledBadge,
+            ]}
+          >
             <Text style={styles.statusText}>
-              {expense.settled ? 'Đã thanh toán' : `${settled}/${total} đã thanh toán`}
+              {expense.settled
+                ? "Đã thanh toán"
+                : `${settled}/${total} đã thanh toán`}
             </Text>
           </View>
         </View>
@@ -228,7 +263,7 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Danh mục:</Text>
-            <Text style={styles.infoValue}>{expense.category || 'Khác'}</Text>
+            <Text style={styles.infoValue}>{expense.category || "Khác"}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -239,14 +274,17 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Người trả:</Text>
             <Text style={styles.infoValue}>
-              {participantsDetails.find(p => p.userId === expense.paidBy)?.name || 'Không xác định'}
-              {isPayer ? ' (Bạn)' : ''}
+              {participantsDetails.find((p) => p.userId === expense.paidBy)
+                ?.name || "Không xác định"}
+              {isPayer ? " (Bạn)" : ""}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Phân chia:</Text>
-            <Text style={styles.infoValue}>{expense.splitType === 'equal' ? 'Chia đều' : 'Tùy chỉnh'}</Text>
+            <Text style={styles.infoValue}>
+              {expense.splitType === "equal" ? "Chia đều" : "Tùy chỉnh"}
+            </Text>
           </View>
         </View>
 
@@ -260,7 +298,9 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
         <View style={styles.participantsSection}>
           <View style={styles.participantsSectionHeader}>
             <Text style={styles.participantsLabel}>Người tham gia:</Text>
-            <Text style={styles.settlementStatus}>{settled}/{total} đã thanh toán</Text>
+            <Text style={styles.settlementStatus}>
+              {settled}/{total} đã thanh toán
+            </Text>
           </View>
 
           {participantsDetails.map((participant) => (
@@ -268,36 +308,54 @@ const ExpenseDetailScreen = ({ route, navigation }) => {
               <View style={styles.participantInfo}>
                 <Text style={styles.participantName}>
                   {participant.name}
-                  {participant.isCurrentUser ? ' (Bạn)' : ''}
-                  {participant.userId === expense.paidBy ? ' 💰' : ''}
+                  {participant.isCurrentUser ? " (Bạn)" : ""}
+                  {participant.userId === expense.paidBy ? " 💰" : ""}
                 </Text>
                 <Text style={styles.participantAmount}>
-                  {Math.round(expense.amount * (participant.share / 100)).toLocaleString()} đ ({participant.share}%)
+                  {Math.round(
+                    expense.amount * (participant.share / 100)
+                  ).toLocaleString()}{" "}
+                  đ ({participant.share}%)
                 </Text>
               </View>
 
               <View style={styles.settlementToggle}>
-                <Text style={[
-                  styles.settlementStatus,
-                  participant.settled ? styles.settledText : styles.unsettledText
-                ]}>
-                  {participant.settled ? 'Đã TT' : 'Chưa TT'}
+                <Text
+                  style={[
+                    styles.settlementStatus,
+                    participant.settled
+                      ? styles.settledText
+                      : styles.unsettledText,
+                  ]}
+                >
+                  {participant.settled ? "Đã TT" : "Chưa TT"}
                 </Text>
 
                 {/* Chỉ hiển thị nút toggle nếu người dùng hiện tại là người trả tiền */}
                 {isPayer && (
                   <Switch
                     value={participant.settled}
-                    onValueChange={() => handleToggleSettlement(participant.userId, participant.settled)}
-                    disabled={isUpdating || (participant.userId === expense.paidBy)}
-                    trackColor={{ false: COLORS.lightGray, true: COLORS.primary + '70' }}
-                    thumbColor={participant.settled ? COLORS.primary : COLORS.gray}
+                    onValueChange={() =>
+                      handleToggleSettlement(
+                        participant.userId,
+                        participant.settled
+                      )
+                    }
+                    disabled={
+                      isUpdating || participant.userId === expense.paidBy
+                    }
+                    trackColor={{
+                      false: COLORS.lightGray,
+                      true: COLORS.primary + "70",
+                    }}
+                    thumbColor={
+                      participant.settled ? COLORS.primary : COLORS.gray
+                    }
                   />
                 )}
               </View>
             </View>
           ))}
-
         </View>
 
         <View style={styles.buttonSection}>
@@ -334,14 +392,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   expenseTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     flex: 1,
   },
@@ -351,19 +409,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   settledBadge: {
-    backgroundColor: COLORS.success + '20', // Adding transparency
+    backgroundColor: COLORS.success + "20", // Adding transparency
   },
   unsettledBadge: {
-    backgroundColor: COLORS.warning + '20', // Adding transparency
+    backgroundColor: COLORS.warning + "20", // Adding transparency
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   amountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 24,
     paddingBottom: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -376,15 +434,15 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
   },
   infoSection: {
     marginBottom: 16,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: COLORS.border,
@@ -395,7 +453,7 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.dark,
   },
   notesSection: {
@@ -406,7 +464,7 @@ const styles = StyleSheet.create({
   },
   notesLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.secondary,
     marginBottom: 8,
   },
@@ -422,9 +480,9 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   participantsSectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
     paddingBottom: 8,
     borderBottomWidth: 1,
@@ -432,7 +490,7 @@ const styles = StyleSheet.create({
   },
   participantsLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.dark,
   },
   settlementStatus: {
@@ -440,9 +498,9 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
   },
   participantRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: COLORS.border,
@@ -452,7 +510,7 @@ const styles = StyleSheet.create({
   },
   participantName: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.dark,
     marginBottom: 4,
   },
@@ -461,10 +519,10 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
   },
   settlementToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     width: 120,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   settledText: {
     color: COLORS.success,

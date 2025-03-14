@@ -65,7 +65,7 @@
       "ukx94m2p1"
     ],
     "expenses": [
-      "m86kgkg5EAVW1"
+      "m89a6ub83171Y"
     ],
     "joinCode": "G9MT8V"
   },
@@ -80,5 +80,17 @@
     ],
     "expenses": [],
     "joinCode": "CWUR5B"
+  },
+  {
+    "id": "m89c3avcOZ1VE",
+    "name": "Rff",
+    "description": "",
+    "createdBy": "up3w9b7r4",
+    "createdAt": "2025-03-14T22:12:53.832Z",
+    "members": [
+      "up3w9b7r4"
+    ],
+    "expenses": [],
+    "joinCode": "CJYEHQ"
   }
 ]
