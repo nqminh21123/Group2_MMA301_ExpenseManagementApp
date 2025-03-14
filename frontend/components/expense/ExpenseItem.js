@@ -152,7 +152,7 @@ const ExpenseItem = ({
             <Text style={styles.paidBy}>
               {paidBy === userId
                 ? "Bạn trả"
-                : "Người trả:" + `${getMemberName(paidBy)}`}
+                : "Người trả: " + `${getMemberName(paidBy)}`}
             </Text>
           </View>
         </View>
