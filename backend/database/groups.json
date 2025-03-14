@@ -1,0 +1,84 @@
+[
+  {
+    "id": "g1a2b3c4d5",
+    "name": "Chuyến du lịch Đà Lạt",
+    "description": "Chi tiêu cho chuyến du lịch Đà Lạt cuối tháng 3",
+    "createdBy": "uj2c0n67k",
+    "createdAt": "2023-03-01T10:00:00.000Z",
+    "members": [
+      "uj2c0n67k",
+      "ukx94m2p1",
+      "ul7z5v3q8",
+      "up3w9b7r4"
+    ],
+    "expenses": [
+      "e1p2o3i4u5",
+      "e5t6y7u8i9",
+      "e9o8i7u6y5",
+      "m86w24roFUDTO"
+    ],
+    "joinCode": "BEUHO2"
+  },
+  {
+    "id": "g9h8i7j6k5",
+    "name": "Sinh hoạt chung nhà",
+    "description": "Chi tiêu sinh hoạt hàng tháng của căn hộ",
+    "createdBy": "ukx94m2p1",
+    "createdAt": "2023-02-15T14:30:00.000Z",
+    "members": [
+      "ukx94m2p1",
+      "up3w9b7r4",
+      "uq6t2s9e1"
+    ],
+    "expenses": [
+      "e4r3e2w1q0",
+      "e8t7r6e5w4",
+      "e2w3e4r5t6",
+      "m86kc1x4J9E74"
+    ],
+    "joinCode": "IAHJH3"
+  },
+  {
+    "id": "gx5y4z3w2",
+    "name": "Dự án nhóm",
+    "description": "Chi tiêu cho dự án nhóm môn học",
+    "createdBy": "uq6t2s9e1",
+    "createdAt": "2023-03-10T09:45:00.000Z",
+    "members": [
+      "uq6t2s9e1",
+      "up3w9b7r4",
+      "ukx94m2p1"
+    ],
+    "expenses": [
+      "e7y6t5r4e3"
+    ],
+    "joinCode": "P4R8D1"
+  },
+  {
+    "id": "m86h5sa4QH6TY",
+    "name": "Ctgc Cứ",
+    "description": "",
+    "createdBy": "ukx94m2p1",
+    "createdAt": "2025-03-12T22:11:29.260Z",
+    "members": [
+      "up3w9b7r4",
+      "ukx94m2p1"
+    ],
+    "expenses": [
+      "m86kgkg5EAVW1"
+    ],
+    "joinCode": "G9MT8V"
+  },
+  {
+    "id": "m86i50naUS9GI",
+    "name": "Cùugi",
+    "description": "",
+    "createdBy": "ukx94m2p1",
+    "createdAt": "2025-03-12T22:38:53.062Z",
+    "members": [
+      "ukx94m2p1"
+    ],
+    "expenses": [],
+    "joinCode": "CWUR5B"
+  }
+]

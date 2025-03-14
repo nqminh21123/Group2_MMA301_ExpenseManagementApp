@@ -1,0 +1,319 @@
+[
+  {
+    "id": "e1p2o3i4u5",
+    "title": "Đặt phòng khách sạn",
+    "amount": 2400000,
+    "paidBy": "uj2c0n67k",
+    "groupId": "g1a2b3c4d5",
+    "date": "2023-03-05T00:00:00.000Z",
+    "createdAt": "2023-03-05T14:20:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "uj2c0n67k",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "ul7z5v3q8",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 25,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Thuê nhà",
+    "notes": "Đặt 2 phòng ở khách sạn Mường Thanh, 3 đêm"
+  },
+  {
+    "id": "e5t6y7u8i9",
+    "title": "Vé máy bay",
+    "amount": 3600000,
+    "paidBy": "ul7z5v3q8",
+    "groupId": "g1a2b3c4d5",
+    "date": "2023-03-10T00:00:00.000Z",
+    "createdAt": "2023-03-10T09:15:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "uj2c0n67k",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "ul7z5v3q8",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 25,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Đi lại",
+    "notes": "Vé khứ hồi HCM - Đà Lạt"
+  },
+  {
+    "id": "e9o8i7u6y5",
+    "title": "Đồ ăn ngày 1",
+    "amount": 850000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "g1a2b3c4d5",
+    "date": "2023-03-25T00:00:00.000Z",
+    "createdAt": "2023-03-25T21:30:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "uj2c0n67k",
+        "share": 25,
+        "settled": false
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 25,
+        "settled": false
+      },
+      {
+        "userId": "ul7z5v3q8",
+        "share": 25,
+        "settled": false
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 25,
+        "settled": true
+      }
+    ],
+    "settled": false,
+    "category": "Đồ ăn uống",
+    "notes": "Ăn tối tại nhà hàng Cối Xay Gió",
+    "updatedAt": "2025-03-13T09:21:13.362Z"
+  },
+  {
+    "id": "e4r3e2w1q0",
+    "title": "Tiền điện tháng 2",
+    "amount": 450000,
+    "paidBy": "ukx94m2p1",
+    "groupId": "g9h8i7j6k5",
+    "date": "2023-02-28T00:00:00.000Z",
+    "createdAt": "2023-02-28T18:45:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "ukx94m2p1",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "uq6t2s9e1",
+        "share": 33.34,
+        "settled": false
+      }
+    ],
+    "settled": false,
+    "category": "Hóa đơn",
+    "notes": "Hóa đơn tiền điện tháng 2/2023",
+    "updatedAt": "2025-03-12T22:13:06.268Z"
+  },
+  {
+    "id": "e8t7r6e5w4",
+    "title": "Tiền nước tháng 2",
+    "amount": 180000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "g9h8i7j6k5",
+    "date": "2023-02-28T00:00:00.000Z",
+    "createdAt": "2023-02-28T18:50:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "ukx94m2p1",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "uq6t2s9e1",
+        "share": 33.34,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Hóa đơn",
+    "notes": "Hóa đơn tiền nước tháng 2/2023",
+    "updatedAt": "2025-03-12T23:39:05.937Z"
+  },
+  {
+    "id": "e2w3e4r5t6",
+    "title": "Đi chợ tuần này",
+    "amount": 520000,
+    "paidBy": "uq6t2s9e1",
+    "groupId": "g9h8i7j6k5",
+    "date": "2023-03-12T00:00:00.000Z",
+    "createdAt": "2023-03-12T10:30:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "ukx94m2p1",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 33.33,
+        "settled": true
+      },
+      {
+        "userId": "uq6t2s9e1",
+        "share": 33.34,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Đồ ăn uống",
+    "notes": "Thực phẩm và đồ dùng sinh hoạt hàng tuần"
+  },
+  {
+    "id": "e7y6t5r4e3",
+    "title": "In tài liệu",
+    "amount": 125000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "gx5y4z3w2",
+    "date": "2023-03-15T00:00:00.000Z",
+    "createdAt": "2023-03-15T16:20:00.000Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "up3w9b7r4",
+        "share": 50,
+        "settled": true
+      },
+      {
+        "userId": "uq6t2s9e1",
+        "share": 50,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Khác",
+    "notes": "In tài liệu và báo cáo cho dự án",
+    "updatedAt": "2025-03-12T17:35:45.240Z"
+  },
+  {
+    "id": "m86kc1x4J9E74",
+    "title": "Hshs",
+    "amount": 100000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "g9h8i7j6k5",
+    "date": "2025-03-12",
+    "createdAt": "2025-03-12T23:40:20.536Z",
+    "splitType": "custom",
+    "participants": [
+      {
+        "userId": "ukx94m2p1",
+        "share": 59,
+        "settled": false
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 17,
+        "settled": true
+      },
+      {
+        "userId": "uq6t2s9e1",
+        "share": 24,
+        "settled": true
+      }
+    ],
+    "settled": false,
+    "category": "Đi lại",
+    "notes": "",
+    "updatedAt": "2025-03-12T23:42:36.389Z"
+  },
+  {
+    "id": "m86kgkg5EAVW1",
+    "title": "Ăn uống",
+    "amount": 10000000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "m86h5sa4QH6TY",
+    "date": "2025-03-12",
+    "createdAt": "2025-03-12T23:43:51.173Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "up3w9b7r4",
+        "share": 50,
+        "settled": true
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 50,
+        "settled": false
+      }
+    ],
+    "settled": false,
+    "category": "Đồ ăn uống",
+    "notes": "",
+    "updatedAt": "2025-03-12T23:51:39.098Z"
+  },
+  {
+    "id": "m86w24roFUDTO",
+    "title": "Đi chơi",
+    "amount": 2555000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "g1a2b3c4d5",
+    "date": "2025-03-13",
+    "createdAt": "2025-03-13T05:08:33.060Z",
+    "splitType": "custom",
+    "participants": [
+      {
+        "userId": "uj2c0n67k",
+        "share": 74.87,
+        "settled": false
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 17.3,
+        "settled": false
+      },
+      {
+        "userId": "ul7z5v3q8",
+        "share": 5.64,
+        "settled": false
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 2.19,
+        "settled": true
+      }
+    ],
+    "settled": false,
+    "category": "Giải trí",
+    "notes": "",
+    "updatedAt": "2025-03-13T09:20:34.643Z"
+  }
+]

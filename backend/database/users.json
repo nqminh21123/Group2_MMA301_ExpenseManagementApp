@@ -1,0 +1,92 @@
+[
+  {
+    "id": "uj2c0n67k",
+    "name": "Nguyễn Văn A",
+    "email": "nguyenvana@example.com",
+    "password": "password123",
+    "createdAt": "2023-01-15T08:30:00.000Z",
+    "groups": [
+      "g1a2b3c4d5",
+      "m868yrraJ1G0T"
+    ]
+  },
+  {
+    "id": "ukx94m2p1",
+    "name": "Trần Thị B",
+    "email": "tranthib@example.com",
+    "password": "password123",
+    "createdAt": "2023-01-16T10:45:00.000Z",
+    "groups": [
+      "g1a2b3c4d5",
+      "g9h8i7j6k5",
+      "m8693s6kSYBTD",
+      "gx5y4z3w2",
+      "m86h5sa4QH6TY",
+      "m86i50naUS9GI"
+    ]
+  },
+  {
+    "id": "ul7z5v3q8",
+    "name": "Lê Văn C",
+    "email": "levanc@example.com",
+    "password": "password123",
+    "createdAt": "2023-01-17T14:20:00.000Z",
+    "groups": [
+      "g1a2b3c4d5"
+    ]
+  },
+  {
+    "id": "up3w9b7r4",
+    "name": "Phạm Thị D1",
+    "email": "phamthid@example.com",
+    "password": "password123",
+    "createdAt": "2023-01-18T09:15:00.000Z",
+    "groups": [
+      "g1a2b3c4d5",
+      "g9h8i7j6k5",
+      "gx5y4z3w2",
+      "m867k8fo37F9R",
+      "m868m6zcH8IEZ",
+      "m868nngnIKP9N",
+      "m8693s6kSYBTD"
+    ],
+    "updatedAt": "2025-03-12T23:41:06.423Z"
+  },
+  {
+    "id": "uq6t2s9e1",
+    "name": "Hoàng Văn E1",
+    "password": "password123",
+    "createdAt": "2023-01-19T16:40:00.000Z",
+    "groups": [
+      "g9h8i7j6k5",
+      "gx5y4z3w2"
+    ],
+    "updatedAt": "2025-03-12T18:41:53.965Z"
+  },
+  {
+    "id": "m86jxy4z6UQTF",
+    "name": "Thinh",
+    "email": "dongnguyen1968hldh@gmail.com",
+    "password": "123465",
+    "createdAt": "2025-03-12T23:29:22.451Z",
+    "groups": [],
+    "updatedAt": "2025-03-12T23:35:58.615Z"
+  },
+  {
+    "id": "m892axbuD5JL9",
+    "name": "Nguyễn Quang Minh",
+    "email": "minhnqhs170943@fpt.edu.vn",
+    "password": "nqminh21123",
+    "createdAt": "2025-03-14T17:38:53.370Z",
+    "groups": []
+  },
+  {
+    "id": "m893118n392R6",
+    "name": "Minh",
+    "email": "nqminh02112003@gmail.com",
+    "password": "password123",
+    "createdAt": "2025-03-14T17:59:11.496Z",
+    "groups": [],
+    "updatedAt": "2025-03-14T18:00:06.079Z"
+  }
+]
