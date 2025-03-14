@@ -267,7 +267,7 @@
       {
         "userId": "uj2c0n67k",
         "share": 74.87,
-        "settled": false
+        "settled": true
       },
       {
         "userId": "ukx94m2p1",
@@ -277,7 +277,7 @@
       {
         "userId": "ul7z5v3q8",
         "share": 5.64,
-        "settled": false
+        "settled": true
       },
       {
         "userId": "up3w9b7r4",
@@ -288,7 +288,7 @@
     "settled": false,
     "category": "Giải trí",
     "notes": "",
-    "updatedAt": "2025-03-14T22:25:22.325Z"
+    "updatedAt": "2025-03-14T23:14:07.872Z"
   },
   {
     "id": "m89a6ub83171Y",
@@ -313,6 +313,31 @@
     ],
     "settled": false,
     "category": "Mua sắm",
+    "notes": ""
+  },
+  {
+    "id": "m89f3ige6UNHM",
+    "title": "Eses",
+    "amount": 2555555,
+    "paidBy": "up3w9b7r4",
+    "groupId": "m86h5sa4QH6TY",
+    "date": "2025-03-14",
+    "createdAt": "2025-03-14T23:37:02.510Z",
+    "splitType": "custom",
+    "participants": [
+      {
+        "userId": "up3w9b7r4",
+        "share": 52.04,
+        "settled": true
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 47.96,
+        "settled": false
+      }
+    ],
+    "settled": false,
+    "category": "Đi lại",
     "notes": ""
   }
 ]
