@@ -1,5 +1,5 @@
 // frontend/screens/profile/ProfileScreen.js
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  RefreshControl // Import RefreshControl
-} from 'react-native';
-import { AuthContext } from '../../utils/AuthContext';
-import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
-import Loading from '../../components/common/Loading';
-import { COLORS } from '../../utils/constants';
-import { userApi, expenseApi, groupApi } from '../../services/api';
-import Icon from 'react-native-vector-icons/Ionicons';
+  RefreshControl,
+} from "react-native";
+import { AuthContext } from "../../utils/AuthContext";
+import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
+import Loading from "../../components/common/Loading";
+import { COLORS } from "../../utils/constants";
+import { userApi, expenseApi, groupApi } from "../../services/api";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const ProfileScreen = ({ navigation }) => {
   const { user, logout } = useContext(AuthContext);
@@ -23,34 +23,72 @@ const ProfileScreen = ({ navigation }) => {
   const [stats, setStats] = useState({
     totalExpenses: 0,
     totalGroups: 0,
-    totalAmount: 0
+    totalAmount: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // State for tracking refresh
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    // Only attempt to fetch profile data if user object exists and has an id
+    if (user && user.id) {
+      fetchProfileData();
+    } else {
+      // If no user data is available in context, set default values
+      console.log("No user data available in context");
+      setUserData({
+        name: "Người dùng",
+        email: "email@example.com",
+      });
+      setIsLoading(false);
+    }
+  }, [user]);
 
-  // Trong ProfileScreen.js
   const fetchProfileData = async () => {
     try {
-      // Get user data
-      const userResponse = await userApi.getUser(user.id);
-      setUserData(userResponse.data);
+      // Implement fallback for API errors
+      let userData,
+        expenses = [],
+        groups = [];
 
-      // Get user expenses
-      const expensesResponse = await expenseApi.getUserExpenses(user.id);
-      const expenses = expensesResponse.data;
+      try {
+        // Get user data
+        const userResponse = await userApi.getUser(user.id);
+        userData = userResponse.data;
+      } catch (err) {
+        console.log("Error fetching user data:", err);
+        // Fallback user data if API fails
+        userData = {
+          name: user?.name || "Người dùng",
+          email: user?.email || "email@example.com",
+        };
+      }
 
-      // Get user groups
-      const groupsResponse = await groupApi.getUserGroups(user.id);
-      const groups = groupsResponse.data;
+      try {
+        // Get user expenses
+        const expensesResponse = await expenseApi.getUserExpenses(user.id);
+        expenses = expensesResponse.data;
+      } catch (err) {
+        console.log("Error fetching expenses:", err);
+        // Keep empty array as fallback
+      }
 
-      // Tính toán tổng chi tiêu thực tế (phần mà người dùng phải trả)
+      try {
+        // Get user groups
+        const groupsResponse = await groupApi.getUserGroups(user.id);
+        groups = groupsResponse.data;
+      } catch (err) {
+        console.log("Error fetching groups:", err);
+        // Keep empty array as fallback
+      }
+
+      // Set user data
+      setUserData(userData);
+
+      // Calculate total user expenses
       let userTotalAmount = 0;
-      expenses.forEach(expense => {
-        const userShare = expense.participants.find(p => p.userId === user.id)?.share || 0;
+      expenses.forEach((expense) => {
+        const userShare =
+          expense.participants.find((p) => p.userId === user.id)?.share || 0;
         const userAmount = expense.amount * (userShare / 100);
         userTotalAmount += userAmount;
       });
@@ -58,14 +96,22 @@ const ProfileScreen = ({ navigation }) => {
       setStats({
         totalExpenses: expenses.length,
         totalGroups: groups.length,
-        totalAmount: userTotalAmount
+        totalAmount: userTotalAmount,
       });
     } catch (error) {
-      console.log('Error fetching profile data:', error);
-      Alert.alert('Lỗi', 'Không thể tải dữ liệu hồ sơ. Vui lòng thử lại sau.');
+      console.log("Error in fetchProfileData:", error);
+      Alert.alert("Lỗi", "Không thể tải dữ liệu hồ sơ. Vui lòng thử lại sau.");
+
+      // Set fallback data to prevent rendering errors
+      if (!userData) {
+        setUserData({
+          name: user?.name || "Người dùng",
+          email: user?.email || "email@example.com",
+        });
+      }
     } finally {
       setIsLoading(false);
-      setRefreshing(false); // Stop refreshing indicator
+      setRefreshing(false);
     }
   };
 
@@ -75,24 +121,24 @@ const ProfileScreen = ({ navigation }) => {
     fetchProfileData();
   };
 
-  // Thêm phương thức để mở dashboard
   const openDashboard = () => {
-    navigation.navigate('ExpenseDashboard');
+    navigation.navigate("ExpenseDashboard");
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Đăng xuất',
-      'Bạn có chắc chắn muốn đăng xuất?',
-      [
-        { text: 'Hủy', style: 'cancel' },
-        { text: 'Đăng xuất', onPress: logout }
-      ]
-    );
+    Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
+      { text: "Hủy", style: "cancel" },
+      { text: "Đăng xuất", onPress: logout },
+    ]);
   };
 
   if (isLoading) {
     return <Loading text="Đang tải thông tin hồ sơ..." />;
+  }
+
+  // Add null check to prevent rendering before userData is available
+  if (!userData) {
+    return <Loading text="Đang tải thông tin người dùng..." />;
   }
 
   return (
@@ -102,10 +148,10 @@ const ProfileScreen = ({ navigation }) => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          colors={[COLORS.primary]} // Customize refresh indicator color
-          tintColor={COLORS.primary} // For iOS
-          title="Đang tải..." // For iOS
-          titleColor={COLORS.secondary} // For iOS
+          colors={[COLORS.primary]}
+          tintColor={COLORS.primary}
+          title="Đang tải..."
+          titleColor={COLORS.secondary}
         />
       }
     >
@@ -134,24 +180,30 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.statLabel}>Chi tiêu</Text>
         </Card>
 
-         <TouchableOpacity onPress={openDashboard}>
-            <Card style={styles.statCard}>
-              <View style={styles.statIconContainer}>
-                <Icon name="cash-outline" size={24} color={COLORS.primary} />
-              </View>
-              <Text style={styles.statValue}>{stats.totalAmount.toLocaleString()}</Text>
-              <Text style={styles.statLabel}>Tổng chi (đ)</Text>
-              <View style={styles.viewMoreIndicator}>
-                <Icon name="chevron-forward-circle" size={16} color={COLORS.primary} />
-              </View>
-            </Card>
-          </TouchableOpacity>
+        <TouchableOpacity onPress={openDashboard}>
+          <Card style={styles.statCard}>
+            <View style={styles.statIconContainer}>
+              <Icon name="cash-outline" size={24} color={COLORS.primary} />
+            </View>
+            <Text style={styles.statValue}>
+              {stats.totalAmount.toLocaleString()}
+            </Text>
+            <Text style={styles.statLabel}>Tổng chi (đ)</Text>
+            <View style={styles.viewMoreIndicator}>
+              <Icon
+                name="chevron-forward-circle"
+                size={16}
+                color={COLORS.primary}
+              />
+            </View>
+          </Card>
+        </TouchableOpacity>
       </View>
 
       <Card style={styles.menuCard}>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => navigation.navigate('Settings')}
+          onPress={() => navigation.navigate("Settings")}
         >
           <View style={styles.menuItemContent}>
             <Icon name="settings-outline" size={22} color={COLORS.dark} />
@@ -170,7 +222,11 @@ const ProfileScreen = ({ navigation }) => {
 
         <TouchableOpacity style={styles.menuItem}>
           <View style={styles.menuItemContent}>
-            <Icon name="information-circle-outline" size={22} color={COLORS.dark} />
+            <Icon
+              name="information-circle-outline"
+              size={22}
+              color={COLORS.dark}
+            />
             <Text style={styles.menuItemText}>Thông tin ứng dụng</Text>
           </View>
           <Icon name="chevron-forward" size={20} color={COLORS.gray} />
@@ -193,12 +249,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   viewMoreIndicator: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 24,
     paddingHorizontal: 16,
     backgroundColor: COLORS.white,
@@ -208,18 +264,18 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   avatarText: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.white,
   },
   name: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     marginBottom: 4,
   },
@@ -228,28 +284,28 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 16,
   },
   statCard: {
     flex: 1,
     margin: 4,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
     backgroundColor: COLORS.lightGray,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 8,
   },
   statValue: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     marginBottom: 4,
   },
@@ -260,19 +316,19 @@ const styles = StyleSheet.create({
   menuCard: {
     margin: 16,
     padding: 0,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: COLORS.border,
   },
   menuItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   menuItemText: {
     fontSize: 16,

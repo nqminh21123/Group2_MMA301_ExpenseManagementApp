@@ -14,6 +14,8 @@ import GroupDetailScreen from "../screens/group/GroupDetailScreen";
 import JoinGroupScreen from "../screens/group/JoinGroupScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import SettingsScreen from "../screens/profile/SettingsScreen";
+import ChangePasswordScreen from "../screens/profile/ChangePasswordScreen";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import ExpenseDashboardScreen from "../screens/profile/ExpenseDashboardScreen";
 
 // Random Tool Screens
@@ -90,6 +92,16 @@ const RootNavigator = () => {
         options={{ headerShown: true, title: "Cài Đặt" }}
       />
       <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ headerShown: true, title: "Đổi Mật Khẩu" }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="ExpenseDashboard"
         component={ExpenseDashboardScreen}
         options={{ headerShown: true, title: "Thống Kê Chi Tiêu" }}
@@ -104,6 +116,7 @@ const RootNavigator = () => {
     </Stack.Navigator>
   );
 };
+
 // Tab Navigator chỉ chứa các màn hình chính
 const MainTabNavigator = () => {
   return (

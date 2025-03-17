@@ -272,7 +272,7 @@
       {
         "userId": "ukx94m2p1",
         "share": 17.3,
-        "settled": false
+        "settled": true
       },
       {
         "userId": "ul7z5v3q8",
@@ -285,10 +285,10 @@
         "settled": true
       }
     ],
-    "settled": false,
+    "settled": true,
     "category": "Giải trí",
     "notes": "",
-    "updatedAt": "2025-03-14T23:14:07.872Z"
+    "updatedAt": "2025-03-16T19:15:53.512Z"
   },
   {
     "id": "m89a6ub83171Y",
@@ -338,6 +338,62 @@
     ],
     "settled": false,
     "category": "Đi lại",
+    "notes": "",
+    "updatedAt": "2025-03-17T15:25:53.810Z"
+  },
+  {
+    "id": "m8d7tod5O5I46",
+    "title": "Ctchc",
+    "amount": 12000000,
+    "paidBy": "ul7z5v3q8",
+    "groupId": "g1a2b3c4d5",
+    "date": "2025-03-17",
+    "createdAt": "2025-03-17T15:24:31.001Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "uj2c0n67k",
+        "share": 25,
+        "settled": false
+      },
+      {
+        "userId": "ukx94m2p1",
+        "share": 25,
+        "settled": false
+      },
+      {
+        "userId": "ul7z5v3q8",
+        "share": 25,
+        "settled": true
+      },
+      {
+        "userId": "up3w9b7r4",
+        "share": 25,
+        "settled": false
+      }
+    ],
+    "settled": false,
+    "category": "Đồ ăn uống",
+    "notes": "yhhu"
+  },
+  {
+    "id": "m8d9uwo1994T3",
+    "title": "Gttf",
+    "amount": 12000000,
+    "paidBy": "up3w9b7r4",
+    "groupId": "m89c3avcOZ1VE",
+    "date": "2025-03-17",
+    "createdAt": "2025-03-17T16:21:27.649Z",
+    "splitType": "equal",
+    "participants": [
+      {
+        "userId": "up3w9b7r4",
+        "share": 100,
+        "settled": true
+      }
+    ],
+    "settled": true,
+    "category": "Mua sắm",
     "notes": ""
   }
 ]

@@ -1,20 +1,26 @@
-
 // frontend/screens/auth/RegisterScreen.js
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { AuthContext } from '../../utils/AuthContext';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-import { COLORS } from '../../utils/constants';
-import { userApi } from '../../services/api';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { AuthContext } from "../../utils/AuthContext";
+import Input from "../../components/common/Input";
+import Button from "../../components/common/Button";
+import { COLORS } from "../../utils/constants";
+import { userApi } from "../../services/api";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const RegisterScreen = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -23,11 +29,13 @@ const RegisterScreen = ({ navigation }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!name) newErrors.name = 'Tên không được để trống';
-    if (!email) newErrors.email = 'Email không được để trống';
-    if (!password) newErrors.password = 'Mật khẩu không được để trống';
-    if (password.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-    if (password !== confirmPassword) newErrors.confirmPassword = 'Mật khẩu không khớp';
+    if (!name) newErrors.name = "Tên không được để trống";
+    if (!email) newErrors.email = "Email không được để trống";
+    if (!password) newErrors.password = "Mật khẩu không được để trống";
+    if (password.length < 6)
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
+    if (password !== confirmPassword)
+      newErrors.confirmPassword = "Mật khẩu không khớp";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -44,18 +52,18 @@ const RegisterScreen = ({ navigation }) => {
       login(response.data);
 
       Alert.alert(
-        'Đăng ký thành công',
-        'Tài khoản của bạn đã được tạo thành công!'
+        "Đăng ký thành công",
+        "Tài khoản của bạn đã được tạo thành công!"
       );
     } catch (error) {
-      console.log('Register error:', error);
+      console.log("Register error:", error);
 
-      let errorMessage = 'Đã xảy ra lỗi khi đăng ký';
+      let errorMessage = "Đã xảy ra lỗi khi đăng ký";
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
       }
 
-      Alert.alert('Đăng ký thất bại', errorMessage);
+      Alert.alert("Đăng ký thất bại", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +140,7 @@ const RegisterScreen = ({ navigation }) => {
 
         <View style={styles.loginContainer}>
           <Text style={styles.loginText}>Đã có tài khoản? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={styles.loginLink}>Đăng nhập</Text>
           </TouchableOpacity>
         </View>
@@ -158,7 +166,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.dark,
     marginBottom: 10,
   },
@@ -173,8 +181,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   loginText: {
@@ -182,7 +190,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     color: COLORS.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

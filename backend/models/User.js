@@ -1,5 +1,10 @@
 // backend/models/User.js
-const { readData, writeData, USERS_FILE, generateId } = require('../utils/database');
+const {
+  readData,
+  writeData,
+  USERS_FILE,
+  generateId,
+} = require("../utils/database");
 
 // Lưu trữ mã xác nhận tạm thời
 const verificationCodes = new Map(); // key: email, value: { code, expires }
@@ -20,17 +25,22 @@ class User {
 
   static async findById(id) {
     const users = await readData(USERS_FILE);
-    return users.find(user => user.id === id);
+    return users.find((user) => user.id === id);
   }
 
   static async findByEmail(email) {
     const users = await readData(USERS_FILE);
-    return users.find(user => user.email === email);
+    return users.find((user) => user.email === email);
   }
 
   static async create(userData) {
     const users = await readData(USERS_FILE);
-    const newUser = new User(null, userData.name, userData.email, userData.password);
+    const newUser = new User(
+      null,
+      userData.name,
+      userData.email,
+      userData.password
+    );
     users.push(newUser);
     await writeData(USERS_FILE, users);
     return newUser;
@@ -38,10 +48,14 @@ class User {
 
   static async update(id, updateData) {
     const users = await readData(USERS_FILE);
-    const index = users.findIndex(user => user.id === id);
+    const index = users.findIndex((user) => user.id === id);
 
     if (index !== -1) {
-      users[index] = { ...users[index], ...updateData, updatedAt: new Date().toISOString() };
+      users[index] = {
+        ...users[index],
+        ...updateData,
+        updatedAt: new Date().toISOString(),
+      };
       await writeData(USERS_FILE, users);
       return users[index];
     }
@@ -51,7 +65,7 @@ class User {
 
   static async delete(id) {
     const users = await readData(USERS_FILE);
-    const filteredUsers = users.filter(user => user.id !== id);
+    const filteredUsers = users.filter((user) => user.id !== id);
 
     if (filteredUsers.length < users.length) {
       await writeData(USERS_FILE, filteredUsers);
@@ -63,7 +77,7 @@ class User {
 
   static async addGroup(userId, groupId) {
     const users = await readData(USERS_FILE);
-    const userIndex = users.findIndex(user => user.id === userId);
+    const userIndex = users.findIndex((user) => user.id === userId);
 
     if (userIndex !== -1) {
       if (!users[userIndex].groups.includes(groupId)) {
@@ -78,10 +92,12 @@ class User {
 
   static async removeGroup(userId, groupId) {
     const users = await readData(USERS_FILE);
-    const userIndex = users.findIndex(user => user.id === userId);
+    const userIndex = users.findIndex((user) => user.id === userId);
 
     if (userIndex !== -1) {
-      users[userIndex].groups = users[userIndex].groups.filter(id => id !== groupId);
+      users[userIndex].groups = users[userIndex].groups.filter(
+        (id) => id !== groupId
+      );
       await writeData(USERS_FILE, users);
       return users[userIndex];
     }
@@ -89,22 +105,30 @@ class User {
     return null;
   }
 
-  // Phương thức để kiểm tra tính hợp lệ của mã xác nhận
   static async verifyPasswordResetCode(email, code) {
+    console.log(`Attempting to verify code for email: ${email}, code: ${code}`);
+
     const verification = verificationCodes.get(email);
+    console.log("Stored verification data:", verification);
 
     if (!verification) {
+      console.log("No verification code found for this email");
       return false;
     }
 
-    // Kiểm tra mã và thời gian hết hạn
-    if (verification.code === code && verification.expires > Date.now()) {
-      return true;
-    }
+    // So sánh mã nhập vào với mã được lưu trữ (chuyển về chuỗi để đảm bảo so sánh chính xác)
+    const codeMatches = String(verification.code) === String(code);
+    const stillValid = verification.expires > Date.now();
 
-    return false;
+    console.log(`Code matches: ${codeMatches}, Still valid: ${stillValid}`);
+    console.log(
+      `Stored code: ${verification.code}, Expires: ${new Date(
+        verification.expires
+      ).toISOString()}`
+    );
+
+    return codeMatches && stillValid;
   }
-
   // Phương thức để lưu mã xác nhận mới
   static async saveVerificationCode(email, code) {
     // Thời gian hết hạn: 10 phút
@@ -112,11 +136,42 @@ class User {
 
     verificationCodes.set(email, { code, expires });
   }
+  // Phương thức để thay đổi mật khẩu với xác thực mật khẩu hiện tại
+  static async changePasswordWithVerification(
+    userId,
+    currentPassword,
+    newPassword
+  ) {
+    console.log(`Attempting to change password for user ID: ${userId}`);
 
+    const users = await readData(USERS_FILE);
+    const userIndex = users.findIndex((user) => user.id === userId);
+
+    if (userIndex === -1) {
+      console.log(`User not found with ID: ${userId}`);
+      return { success: false, message: "Không tìm thấy người dùng" };
+    }
+
+    // Xác thực mật khẩu hiện tại
+    if (users[userIndex].password !== currentPassword) {
+      console.log("Current password verification failed");
+      return { success: false, message: "Mật khẩu hiện tại không chính xác" };
+    }
+
+    // Cập nhật mật khẩu
+    users[userIndex].password = newPassword;
+    users[userIndex].updatedAt = new Date().toISOString();
+
+    // Lưu lại dữ liệu
+    await writeData(USERS_FILE, users);
+    console.log("Password changed successfully");
+
+    return { success: true, message: "Mật khẩu đã được thay đổi thành công" };
+  }
   // Phương thức để thay đổi mật khẩu
   static async changePassword(email, newPassword) {
     const users = await readData(USERS_FILE);
-    const userIndex = users.findIndex(user => user.email === email);
+    const userIndex = users.findIndex((user) => user.email === email);
 
     if (userIndex === -1) {
       return null;
