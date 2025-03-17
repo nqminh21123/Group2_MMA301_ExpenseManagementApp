@@ -158,7 +158,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
             // Điều hướng đến màn hình đăng nhập
             navigation.reset({
               index: 0,
-              routes: [{ name: "LoginScreen" }],
+              routes: [{ name: "Welcome" }],
             });
           },
         },
@@ -249,23 +249,32 @@ const ForgotPasswordScreen = ({ navigation }) => {
             Nhập mật khẩu mới cho tài khoản của bạn
           </Text>
           <Input
+            key="newPasswordInput"
             label="Mật khẩu mới"
             value={newPassword}
-            onChangeText={setNewPassword}
+            onChangeText={(text) => {
+              console.log("Setting new password:", text);
+              setNewPassword(text);
+            }}
             placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
-            secureTextEntry
+            secureTextEntry={true}
             icon="lock-closed-outline"
-            showPasswordToggle
+            showPasswordToggle={true}
             error={errors.newPassword}
           />
+
           <Input
+            key="confirmPasswordInput"
             label="Xác nhận mật khẩu"
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            onChangeText={(text) => {
+              console.log("Setting confirm password:", text);
+              setConfirmPassword(text);
+            }}
             placeholder="Nhập lại mật khẩu mới"
-            secureTextEntry
+            secureTextEntry={true}
             icon="lock-closed-outline"
-            showPasswordToggle
+            showPasswordToggle={true}
             error={errors.confirmPassword}
           />
         </>
